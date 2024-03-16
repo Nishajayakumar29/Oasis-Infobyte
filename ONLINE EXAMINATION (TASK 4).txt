@@ -1,0 +1,223 @@
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class Main {
+    static class Database {
+        static String[] usernames = {"user1", "user2", "user3"};
+        static String[] passwords = {"pass1", "pass2", "pass3"};
+        static String[] profiles = {"Profile 1", "Profile 2", "Profile 3"};
+    }
+
+    public static class User {
+        private String username;
+        private String password;
+        private String profile;
+        private Scanner sc = new Scanner(System.in);
+
+        public User() {
+            System.out.println("--------------------------------------------------------------");
+            System.out.println("WELCOME TO ONLINE EXAMINATION");
+            System.out.println("-----------------------------------------------------------------");
+        }
+
+        public boolean login() {
+            System.out.println("Enter Username : ");
+            username = sc.nextLine();
+            System.out.println("Enter password  :");
+            password = sc.nextLine();
+
+            for (int i = 0; i < Database.usernames.length; i++) {
+                if (Database.usernames[i].equals(username) && Database.passwords[i].equals(password)) {
+                    profile = Database.profiles[i];
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void updateProfile() {
+            System.out.println("Current Profile: " + profile);
+            System.out.print("Enter new profile: ");
+            profile = sc.nextLine();
+            System.out.println("Profile updated successfully!");
+        }
+
+        public void changePassword() {
+            System.out.print("Enter current password: ");
+            String currentPassword = sc.nextLine();
+            if (currentPassword.equals(password)) {
+                System.out.print("Enter new password: ");
+                String newPassword = sc.nextLine();
+                password = newPassword;
+                System.out.println("Password changed successfully!");
+            } else {
+                System.out.println("Incorrect current password!");
+            }
+        }
+
+        public String getProfile() {
+            return profile;
+        }
+
+        public void closeScanner() {
+            sc.close();
+        }
+    }
+
+    static class MCQ {
+        private String question;
+        private String[] options;
+        private int correctOption;
+        private Scanner scanner = new Scanner(System.in);
+
+        public MCQ(String question, String[] options, int correctOption) {
+            this.question = question;
+            this.options = options;
+            this.correctOption = correctOption;
+        }
+
+        public void displayQuestion() {
+            System.out.println(question);
+            for (int i = 0; i < options.length; i++) {
+                System.out.println((i + 1) + ". " + options[i]);
+            }
+        }
+
+        public boolean selectAnswer() {
+            System.out.print("Enter your choice: ");
+            int choice;
+            try {
+                choice = scanner.nextInt();
+                scanner.nextLine(); // consume newline
+            } catch (java.util.InputMismatchException e) {
+                scanner.nextLine(); // consume the invalid input
+                System.out.println("Invalid input. Please enter a number.");
+                return false;
+            }
+            return choice == correctOption;
+        }
+
+        public void closeScanner() {
+            scanner.close();
+        }
+    }
+
+    static class TimerManager {
+        private Timer timer;
+        private int secondsLeft;
+
+        public TimerManager(int seconds) {
+            this.secondsLeft = seconds;
+        }
+
+        public void startTimer() {
+            timer = new Timer(); // Create a new Timer instance
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    if (secondsLeft == 0) {
+                        timer.cancel();
+                        System.out.println("Time's up! Submitting answers...");
+                        // Call method to auto-submit answers here
+                    } else {
+                        System.out.println("Time left: " + secondsLeft + " seconds");
+                        secondsLeft--;
+                    }
+                }
+            }, 0, 1000);
+        }
+
+        public void stopTimer() {
+            if (timer != null) {
+                timer.cancel();
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        User user = new User();
+        MCQ[] mcqs = {
+            new MCQ("1. The tree which sends down roots from its branches to the soil is known as?", 
+                    new String[]{"Oak", "Pine", "Banyan", "Palm"}, 3),
+            new MCQ("2. Electric bulb filaments are made of?", 
+                    new String[]{"Copper", "Aluminum", "Lead", "Tungsten"}, 4),
+            new MCQ("3. Brass gets discolored in the air because of the presence of which of the following gases in air?", 
+                    new String[]{"Oxygen", "Hydrogen Sulphide", "Carbon dioxide", "Nitrogen"}, 2),
+            new MCQ("4. Which of the following is a non-metal that remains liquid at room temperature?", 
+                    new String[]{"Phosphorus", "Bromine", "Chlorine", "Helium"}, 2),
+            new MCQ("5. Which of the following is used in pencils?", 
+                    new String[]{"Graphite", "Silicon", "Charcoal", "Phosphorus"}, 1)
+        };
+
+        TimerManager timerManager = new TimerManager(60);
+
+        System.out.println("PLEASE FILL IN THE FOLLOWING DETAILS TO LOGIN!");
+        boolean loggedIn = false;
+        while (!loggedIn) {
+            loggedIn = user.login();
+            if (!loggedIn) {
+                System.out.println("Invalid username or password. Please try again.");
+            }
+        }
+
+        while (loggedIn) {
+            System.out.println("Logged in as: " + user.getProfile());
+            System.out.println("1. Update Profile\n2. Change Password\n3. Attend Test\n4. Logout");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            switch (choice) {
+                case 1:
+                    user.updateProfile();
+                    break;
+                case 2:
+                    user.changePassword();
+                    break;
+                case 3:
+                    System.out.println("You have chosen to attend the test.");
+                    System.out.println("You have 60 seconds to complete each question.");
+                    int correctAnswers = 0;
+                    int totalQuestions = mcqs.length;
+                    for (int i = 0; i < totalQuestions; i++) {
+                        System.out.println("Question " + (i + 1) + ":");
+                        mcqs[i].displayQuestion();
+                        timerManager.startTimer();
+                        boolean answer = mcqs[i].selectAnswer();
+                        if (answer) {
+                            System.out.println("CORRECT ANSWER!");
+                            correctAnswers++;
+                        } else {
+                            System.out.println("INCORRECT ANSWER!");
+                        }
+                        timerManager.stopTimer();
+                        if (i < totalQuestions - 1) {
+                            System.out.println("Do you want to proceed to the next question? (yes/no)");
+                            String proceed = scanner.nextLine();
+                            if (!proceed.equalsIgnoreCase("yes")) {
+                                break; // If user doesn't want to proceed, exit the loop
+                            }
+                        }
+                    }
+                    double score = (double) correctAnswers / totalQuestions * 100;
+                    System.out.println("------------------------------------------------------------------");
+                    System.out.println("Test completed!");
+                    System.out.println("Correct Answers: " + correctAnswers);
+                    System.out.println("Incorrect Answers: " + (totalQuestions - correctAnswers));
+                    System.out.printf("Your Score: %.2f%%\n", score);
+                    System.out.println("------------------------------------------------------------------");
+                    break;
+                case 4:
+                    loggedIn = false;
+                    System.out.println("Logged out successfully.");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+
+        user.closeScanner();
+        scanner.close();
+    }
+}

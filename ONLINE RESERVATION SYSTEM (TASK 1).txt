@@ -1,0 +1,135 @@
+import java.util.Scanner;
+import java.util.Random;
+
+public class Main {
+    private static final int min = 1000;
+    private static final int max = 9999;
+
+    public static class User {
+        private String username;
+        private String password;
+        Scanner sc = new Scanner(System.in);
+
+        public User() {
+            System.out.println("---------------------------------------------------------------------------------------------------------------------------");
+            System.out.println("WELCOME TO MY ONLINE RESERVATION SYSTEM");
+            System.out.println("---------------------------------------------------------------------------------------------------------------------------");
+            System.out.println("PLEASE FILL IN THE FOLLOWING DETAILS TO LOGIN! ");
+        }
+
+        public String getUsername() {
+            System.out.println("Enter Username : ");
+            username = sc.nextLine();
+            return username;
+        }
+
+        public String getPassword() {
+            System.out.println("Enter password  :");
+            password = sc.nextLine();
+            return password;
+        }
+
+        public void pressEnterToContinue() {
+            System.out.println("Press Enter to Continue...");
+            sc.nextLine(); // Wait for user to press enter
+        }
+    }
+
+    public static class PnrRecord {
+        private int pnrNumber;
+        private String passengerName;
+        private String trainNumber;
+        private String classType;
+        private String journeyDate;
+        private String from;
+        private String to;
+
+        Scanner sc = new Scanner(System.in);
+
+        public int getPnrNumber() {
+            Random random = new Random();
+            pnrNumber = random.nextInt(max - min + 1) + min;
+            return pnrNumber;
+        }
+
+        public String getPassengerName() {
+            System.out.println("Enter the passenger name : ");
+            passengerName = sc.nextLine();
+            return passengerName;
+        }
+
+        public String getTrainNumber() {
+            System.out.println("Enter the train number: ");
+            trainNumber = sc.nextLine();
+            return trainNumber;
+        }
+
+        public String getClassType() {
+            System.out.println("Enter the class type  : ");
+            classType = sc.nextLine();
+            return classType;
+        }
+
+        public String getJourneyDate() {
+            System.out.println("Enter the journey date as 'YYYY-MM-DD' format: ");
+            journeyDate = sc.nextLine();
+            return journeyDate;
+        }
+
+        public String getFrom() {
+            System.out.println("Enter the starting place  :");
+            from = sc.nextLine();
+            return from;
+        }
+
+        public String getTo() {
+            System.out.println("Enter the destination place  :  ");
+            to = sc.nextLine();
+            return to;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        User user = new User();
+        PnrRecord pnrRecord = new PnrRecord();
+
+        String username = user.getUsername();
+        String password = user.getPassword();
+
+        user.pressEnterToContinue(); // Wait for user to press Enter
+
+        int pnrNumber = pnrRecord.getPnrNumber();
+        String passengerName = pnrRecord.getPassengerName();
+        String trainNumber = pnrRecord.getTrainNumber();
+        String classType = pnrRecord.getClassType();
+        String journeyDate = pnrRecord.getJourneyDate();
+        String from = pnrRecord.getFrom();
+        String to = pnrRecord.getTo();
+
+        System.out.println("PNR Number: " + pnrNumber);
+        System.out.println("Passenger Name: " + passengerName);
+        System.out.println("Train Number: " + trainNumber);
+        System.out.println("Class Type: " + classType);
+        System.out.println("Journey Date: " + journeyDate);
+        System.out.println("From: " + from);
+        System.out.println("To: " + to);
+
+        System.out.println("Do you want to cancel the reservation? (yes/no)");
+        String choice = sc.nextLine();
+        if (choice.equalsIgnoreCase("yes")) {
+            System.out.print("Enter your PNR number to cancel your reservation: ");
+            int pnr = sc.nextInt();
+            System.out.println("PNR number entered: " + pnr);
+            System.out.println("To cancel reservation, press 1");
+            int cancelOption = sc.nextInt();
+            if (cancelOption == 1) {
+                System.out.println("Your reservation has been canceled!");
+            } else {
+                System.out.println("Reservation cancellation aborted.");
+            }
+        } else {
+            System.out.println("Thank you for using our service.");
+        }
+    }
+}
